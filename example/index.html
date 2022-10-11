@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app1"></div>
+  <div id="app2"></div>
+</body>
+<script src="../packages/reactivity/dist/reactivity.global.js"></script>
+<!-- <script src="../node_modules/vue/dist/vue.global.js"></script> -->
+<script>
+  let waiting = false
+
+  const { reactive, effect, computed, ref, toRefs } = VueReactivity
+  // const { reactive, effect, computed, watch } = Vue
+  const aa = reactive({
+    name: 'adic',
+    obj: {
+      web: 'main'
+    },
+    flag: false
+  })
+  const { flag } = toRefs(aa)
+  // const flag = ref(false)
+  // setInterval(() => {
+  //   flag.value = !flag.value
+  // }, 1000)
+  effect(() => {
+    console.log('change', flag.value);
+  })
+  // const bb = computed(() => {
+  //   return aa.name + '--321'
+  // })
+
+  // effect(() => {
+  //   document.getElementById('app1').innerText = bb.value
+  // })
+  // effect(() => {
+  //   document.getElementById('app2').innerText = aa.name
+  // })
+
+  // watch(aa, (n, o) => {
+  //   console.log('deep-change', n, o);
+  // })
+
+  // watch(() => aa.name, (n, o, cleanup) => {
+  //   cleanup(() => {
+  //     console.log('end');
+  //   })
+  //   console.log('change', n, o);
+  // })
+  // aa.name = 1
+  // aa.name = 2
+  // aa.name = 3
+  // aa.name = 4
+  // let count = 0
+  // let timer = setInterval(() => {
+  //   aa.name = Math.random()
+  //   count++
+  //   if (count > 5) clearInterval(timer)
+  // })
+  // const ef = effect(() => {
+  //   console.log('change');
+  //   document.getElementById('app').innerText = aa.name
+  // }, {
+  //   scheduler() {
+  //     if (waiting) return;
+  //     waiting = true
+  //     setTimeout(() => {
+  //       ef()
+  //       waiting = false
+  //     })
+  //   }
+  // })
+
+  // console.log(ef)
+  // setTimeout(() => {
+  //   aa.name = 'adic wu'
+  //   // ef.effect.stop()
+  //   setTimeout(() => {
+  //     aa.name = 'lucy'
+  //   }, 2000)
+  // }, 1000)
+  // aa.name = 1
+  // aa.name = 2
+  // aa.name = 3
+  // aa.name = 4
+  // console.log(aa, aa.obj);
+</script>
+
+</html>
