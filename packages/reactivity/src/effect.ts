@@ -2,6 +2,7 @@ export type Dep = Set<ReactiveEffect>;
 type Scheduler = () => void;
 
 let activeEffect: ReactiveEffect | null = null;
+let uid = 0;
 /**
  * 响应式对象集合总表
  * 对象集合->对象属性集合->对象属性的ReactiveEffect集合
@@ -22,6 +23,7 @@ function clearEffect(effect: ReactiveEffect) {
 export class ReactiveEffect {
   private active = true;
   public deps: Dep[] = [];
+  public id;
   /**
    * 收集父级ReactiveEffect实例
    * 用于多effect嵌套的问题，因为执行是内向外的，所以在向外执行时需要知道他自己的ReactiveEffect
@@ -39,7 +41,7 @@ export class ReactiveEffect {
     try {
       this.parent = activeEffect;
       activeEffect = this;
-      clearEffect(this);
+      // clearEffect(this); // 暂时的
       return this.fn();
     } finally {
       activeEffect = this.parent;
@@ -56,18 +58,17 @@ export class ReactiveEffect {
 
 export function effect(
   cb: () => void,
-  op: {
-    scheduler?: Scheduler;
-  } = {}
+  scheduler?: Scheduler
 ): () => {
   effect: ReactiveEffect;
 } {
-  const _effect = new ReactiveEffect(cb, op.scheduler);
+  const _effect = new ReactiveEffect(cb, scheduler);
+  _effect.id = uid++;
   _effect.run();
 
-  const itx = _effect.run.bind(_effect);
-  itx.effect = _effect;
-  return itx;
+  const runner = _effect.run.bind(_effect);
+  runner.effect = _effect;
+  return runner;
 }
 
 export function trackEffect(dep: Dep) {
@@ -78,7 +79,7 @@ export function trackEffect(dep: Dep) {
     activeEffect.addDep(dep);
   }
 }
-export function triggerEffect(effects) {
+export function triggerEffect(effects: Dep) {
   [...effects].forEach((ef) => {
     if (ef === activeEffect) return;
     if (ef.scheduler) {

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app"></div>
+</body>
+<script src="../packages/runtime-dom/dist/runtime-dom.global.js"></script>
+<script>
+  const { render, h, createRenderer, createApp, reactive } = VueRuntimeDOM
+  // https://www.bilibili.com/video/BV1j34y1X7Lb?p=2&vd_source=c5594576f1a683147cded7c857af2b39
+  const App = {
+    setup(props, ctx) {
+      const aa = reactive({
+        name: 'adic',
+        list: []
+      })
+      const tst = () => {
+        aa.name = Math.random()
+        aa.list.push(aa.name)
+      }
+      const tas = (item) => {
+        // aa.list.splice(aa.list.indexOf(item), 1) // todo diff删除bug
+      }
+      return {
+        aa,
+        tst,
+        tas
+      }
+    },
+    render(proxy) {
+      return h('p', {}, [
+        h('b', 'title'),
+        h('h1', {
+          onClick: proxy.tst
+        }, proxy.aa.name),
+        h('ul',
+          {
+            style: {
+              background: 'red'
+            }
+          },
+          proxy.aa.list.map((item) =>
+            h('li', {
+              key: item,
+              'data-id': item,
+              onClick: () => proxy.tas(item)
+            }, item)
+          )
+        )
+      ])
+    }
+  }
+  const app = createApp(App, { aa: 123 })
+  app.mount('#app')
+</script>
+
+</html>
